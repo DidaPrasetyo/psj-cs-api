@@ -50,6 +50,7 @@ def login():
         if email == "admin@admin.min" and pwd == "sipalingadmin":
             data = {
                 'data_user': {
+                    'Id_penghuni': 0,
                     'email': 'admin@admin.min',
                     'nama': 'Admin',
                     'cluster': '0',
