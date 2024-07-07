@@ -96,7 +96,7 @@ def login():
 @app.route("/api/penghuni/", methods=['GET', 'POST', 'PUT', 'DELETE'])
 def penghuni():
     if request.method == 'GET':
-        mycursor.execute("SELECT * FROM penghuni")
+        mycursor.execute("SELECT * FROM penghuni INNER JOIN user WHERE user.id_penghuni = penghuni.Id_penghuni")
         result = mycursor.fetchall()
         if mycursor.rowcount > 0:
             data = {
@@ -201,7 +201,7 @@ def penghuni():
 @app.route("/api/keluhan/", methods=['GET', 'POST', 'PUT'])
 def keluhan():
     if request.method == 'GET':
-        mycursor.execute("SELECT * FROM keluhan")
+        mycursor.execute("SELECT * FROM keluhan INNER JOIN penghuni WHERE keluhan.sender = penghuni.id_penghuni")
         result = mycursor.fetchall()
         if mycursor.rowcount > 0:
             data = {
@@ -248,7 +248,11 @@ def keluhan():
 @app.route("/api/informasi/", methods=['GET', 'POST', 'DELETE'])
 def informasi():
     if request.method == 'GET':
-        mycursor.execute("SELECT * FROM informasi")
+        id = request.args.get('id')
+        if id:
+            mycursor.execute(f"SELECT * FROM informasi WHERE id = {id}")
+        else:
+            mycursor.execute("SELECT * FROM informasi")
         result = mycursor.fetchall()
         if mycursor.rowcount > 0:
             data = {
@@ -257,11 +261,10 @@ def informasi():
         mycursor.reset()
 
     if request.method == 'POST':
-        tanggal = request.json['tanggal']
         judul = request.json['judul']
         isi = request.json['isi']
 
-        mycursor.execute(f'INSERT INTO informasi (tanggal, judul, isi) VALUES ("{tanggal}", "{judul}", "{isi}")')
+        mycursor.execute(f'INSERT INTO informasi (judul, isi) VALUES ("{judul}", "{isi}")')
         mydb.commit()
         if mycursor.rowcount > 0:
             data = {
